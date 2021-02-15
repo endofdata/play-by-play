@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <SwitchPreference
+      android:key="dark_mode"
+      android:title="@string/dark_mode"/>
+
+  <!--<Preference
+      app:key="feedback"
+      app:title="Send feedback"
+      app:summary="Report technical issues or suggest new features"/>-->
+
+</PreferenceScreen>

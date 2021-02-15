@@ -1,0 +1,10 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Assets/AboutAssets.txt
+/obj
+/Resources/AboutResources.txt
+/.vs
+/bin
+/Testgame.txt

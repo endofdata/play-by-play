@@ -23,7 +23,7 @@
             android:textAlignment="center"
             android:textAppearance="?android:attr/textAppearanceSmall"
             tools:text="CAR"
-            android:textColor="#ffffab00"
+            android:textColor="@color/colorAccent"
             android:textStyle="bold" />
         <TextView
             android:id="@+id/txtVisitorScore"
@@ -34,7 +34,7 @@
             android:textAlignment="center"
             android:textAppearance="?android:attr/textAppearanceSmall"
             tools:text="21"
-            android:textColor="#ffe0e0e0" />
+            android:textColor="@color/colorDecent" />
         <TextView
             android:id="@+id/txtDownAndToGo"
             android:layout_columnWeight="2"
@@ -44,7 +44,7 @@
             android:textAlignment="center"
             android:textAppearance="?android:attr/textAppearanceSmall"
             tools:text="2nd / 10"
-            android:textColor="#ffe0e0e0" />
+            android:textColor="@color/colorDecent" />
         <TextView
             android:id="@+id/txtPosition"
             android:layout_columnWeight="2"
@@ -54,7 +54,7 @@
             android:textAlignment="center"
             android:textAppearance="?android:attr/textAppearanceSmall"
             tools:text="CAR 14"
-            android:textColor="#ffe0e0e0" />
+            android:textColor="@color/colorDecent" />
         <TextView
             android:id="@+id/txtHomeTeam"
             android:layout_columnWeight="1"
@@ -64,7 +64,7 @@
             android:textAlignment="center"
             android:textAppearance="?android:attr/textAppearanceSmall"
             tools:text="PIT"
-            android:textColor="#ffffab00"
+            android:textColor="@color/colorAccent"
             android:textStyle="bold" />
         <TextView
             android:id="@+id/txtHomeScore"
@@ -75,7 +75,7 @@
             android:textAlignment="center"
             android:textAppearance="?android:attr/textAppearanceSmall"
             tools:text="19"
-            android:textColor="#ffe0e0e0" />
+            android:textColor="@color/colorDecent" />
 
         <TextView
             android:id="@+id/txtQuarter"
@@ -86,7 +86,7 @@
             android:textAlignment="center"
             android:textAppearance="?android:attr/textAppearanceSmall"
             tools:text="3rd"
-            android:textColor="#ffe0e0e0"/>
+            android:textColor="@color/colorDecent"/>
         <TextView
             android:id="@+id/txtTime"
             android:layout_width="wrap_content"
@@ -95,7 +95,7 @@
             android:textAlignment="center"
             android:textAppearance="?android:attr/textAppearanceSmall"
             tools:text="14:45"
-            android:textColor="#ffe0e0e0"/>
+            android:textColor="@color/colorDecent"/>
 
         <SeekBar
             android:id="@+id/sbCurrentPlay"
@@ -113,8 +113,7 @@
         android:gravity="center_horizontal"
         android:textAppearance="?android:attr/textAppearanceMedium"
         tools:text="Far too long texts may exceed the available visible space of the text view. As a workaround we may reduce the font size, optionally only in case of long texts. But the preferred way would be introducing a scrolling view that allows the user to vertically scroll the text and hence keep the initial font size. In fact it is quite interesting, how mach text fits on the screen of the preview device. But I remember, that I had a play description on my real device, that was truncated at the end, because it could not be displayed entirely. So we have to add some more example text just to fill the preview device's text area. I do not want to use Lorem ipsum text here, as it might bore the interested reader. Although, thinking about it, I can imagine that these my words might not become a bestseller, if published as printed media. Cam Newton pass complete short right to Christian McCaffrey for 9 yards (tackle by Josh Jones)"
-        android:textColor="#ff616161"
-        android:background="#ffffffff" />
+         />
 
     <GridLayout
         android:layout_width="match_parent"
@@ -138,7 +137,7 @@
             android:layout_margin="12dp"
             android:numeric="integer"
             android:textAlignment="center"
-            android:textColor="#ffe0e0e0"
+            android:textColor="@color/colorDecent"
             tools:text="120"
             android:minWidth="50dp" />
         <Button

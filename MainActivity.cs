@@ -2,22 +2,26 @@
 using Android.Content;
 using Android.OS;
 using Android.Runtime;
-using Android.Support.V7.App;
 using Android.Text.Method;
 using Android.Views;
 using Android.Widget;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using Xamarin.Essentials;
 
 namespace PlayByPlay
 {
-	[Activity(Label = "@string/app_name", Theme = "@style/AppTheme", MainLauncher = true)]
-	public class MainActivity : AppCompatActivity
+	[Activity(Label = "@string/app_name", Theme = "@style/apptheme", MainLauncher = true)]
+	public class MainActivity : AndroidX.AppCompat.App.AppCompatActivity
 	{
 		// A request code's purpose is to match the result of a "startActivityForResult" with
 		// the type of the original request.  Choose any value.
-		private const int READ_REQUEST_CODE = 1337;
+		private const int Code_SelectFile = 1337;
+		private const int Code_ShowSettings = 1338;
+		private const int Code_Download = 1339;
 
 		private int _currentPlay;
 		private List<string> _lines;
@@ -34,10 +38,16 @@ namespace PlayByPlay
 		private SeekBar _sbCurrentPlay;
 		private Android.Net.Uri _recentFile;
 
+		internal AppSettings Settings
+		{
+			get;
+		} = new AppSettings();
+
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
 			base.OnCreate(savedInstanceState);
-			Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+
+			Platform.Init(this, savedInstanceState);
 			SetContentView(Resource.Layout.activity_main);
 
 			// Get all the output widgets and store them as members for easier access
@@ -59,7 +69,7 @@ namespace PlayByPlay
 				GotoPlay(sender, e.Progress);
 			};
 
-			
+
 			_txtPlay.MovementMethod = new ScrollingMovementMethod();
 
 			// Attach navigation calls to prev and next play buttons
@@ -87,12 +97,37 @@ namespace PlayByPlay
 
 		protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
 		{
-			if (requestCode == READ_REQUEST_CODE && resultCode == Result.Ok)
+			switch (requestCode)
 			{
-				// The document selected by the user won't be returned in the intent.
-				// Instead, a URI to that document will be contained in the return intent
-				// provided to this method as a parameter.  Pull that uri using "resultData.getData()"
-				ResumeStatus(data.Data, 0);
+			case Code_Download:
+				if (resultCode == Result.Ok)
+				{
+					var fileName = data.GetStringExtra(DownloadActivity.ResultName);
+					var reddit = data.GetStringArrayExtra(DownloadActivity.ResultData);
+
+					if (!string.IsNullOrEmpty(fileName) && reddit?.Any() == true)
+					{
+						ResumeStatus(reddit);
+						_recentFile = SaveFile(fileName, reddit);
+					}
+					else
+					{
+						AlertHelper.ShowMessage(this, "No play data available.", "Download");
+					}
+				}
+				break;
+			case Code_SelectFile:
+				if (resultCode == Result.Ok)
+				{
+					// The document selected by the user won't be returned in the intent.
+					// Instead, a URI to that document will be contained in the return intent
+					// provided to this method as a parameter.  Pull that uri using "resultData.getData()"
+					ResumeStatus(data.Data);
+				}
+				break;
+			case Code_ShowSettings:
+
+				break;
 			}
 		}
 
@@ -104,21 +139,24 @@ namespace PlayByPlay
 
 		public override bool OnOptionsItemSelected(IMenuItem item)
 		{
-			int id = item.ItemId;
-
-			if (id == Resource.Id.action_selectfile)
+			switch (item.ItemId)
 			{
+			case Resource.Id.action_selectfile:
 				SelectFile();
 				return true;
-			}
-			if (id == Resource.Id.action_settings)
-			{
+
+			case Resource.Id.action_download:
+				Download();
 				return true;
-			}
-			if (id == Resource.Id.action_exit)
-			{
+
+			case Resource.Id.action_settings:
+				ShowSettings();
+				return true;
+
+			case Resource.Id.action_exit:
 				Finish();
 				return true;
+
 			}
 			return base.OnOptionsItemSelected(item);
 		}
@@ -140,61 +178,114 @@ namespace PlayByPlay
 
 			intent.SetType("text/plain");
 
-			StartActivityForResult(intent, READ_REQUEST_CODE);
+			StartActivityForResult(intent, Code_SelectFile);
 		}
 
-		private void ResumeStatus(Android.Net.Uri dataUri, int currentPlay)
+		public void Download()
 		{
-			if (dataUri != null)
+			var intent = new Intent(this, typeof(DownloadActivity));
+
+			StartActivityForResult(intent, Code_Download);
+		}
+
+		public Android.Net.Uri SaveFile(string fileName, IEnumerable<string> reddit)
+		{
+			if (string.IsNullOrEmpty(fileName))
 			{
-				_lines = LoadPlays(dataUri);
-				GotoPlay(this, currentPlay);
+				throw new ArgumentException($"Parameter '{nameof(fileName)}' cannot be null or empty.");
 			}
-		}
 
-		private List<string> LoadPlays(Android.Net.Uri dataUri)
-		{
-			var result = new List<string>();
+			if (reddit?.Any() != true)
+			{
+				throw new ArgumentException($"Parameter '{nameof(reddit)}' cannot be null or empty array.");
+			}
+
+			Android.Net.Uri result = null;
 
 			try
 			{
+				var folder = GetExternalFilesDir(Android.OS.Environment.DirectoryDownloads);
+				string path = System.IO.Path.Combine(folder.AbsolutePath, fileName);
+
+				if (!File.Exists(path))
+				{
+					using (var writer = new StreamWriter(path, append: false, Encoding.UTF8))
+					{
+						foreach (var line in reddit)
+						{
+							writer.WriteLine(line);
+						}
+					}
+				}
+
+				result = new Android.Net.Uri.Builder()
+					.Scheme("file")
+					.AppendEncodedPath(path)
+					.Build();
+			}
+			catch (IOException)
+			{
+				// TODO: Error handling
+			}
+			return result;
+		}
+
+		public void ShowSettings()
+		{
+			var intent = new Intent(this, typeof(SettingsActivity));
+
+			intent.PutExtra(SettingsActivity.ModelKey, Settings);
+
+			StartActivityForResult(intent, Code_ShowSettings);
+		}
+
+		private void ResumeStatus(Android.Net.Uri dataUri, int currentPlay = 0)
+		{
+			if (dataUri != null)
+			{
 				using (var stream = ContentResolver.OpenInputStream(dataUri))
 				{
-					int skip = 0;
+					ResumeStatus(new EnumerableLines(stream), currentPlay);
+					_recentFile = dataUri;
+				}
+			}
+		}
 
-					using (var reader = new StreamReader(stream))
+		private void ResumeStatus(IEnumerable<string> redditSource, int currentPlay = 0)
+		{
+			_lines = new List<string>();
+			_recentFile = null;
+
+			try
+			{
+				int skip = 0;
+
+				foreach (var line in redditSource)
+				{
+					if (line.StartsWith('|'))
 					{
-						while (reader.EndOfStream == false)
+						switch (skip++)
 						{
-							var line = reader.ReadLine();
-
-							if (line.StartsWith('|'))
-							{
-								switch (skip++)
-								{
-								case 0:
-									InitTeams(line);
-									break;
-								case 1:
-									break;
-								default:
-									result.Add(line);
-									break;
-								}
-							}
+						case 0:
+							InitTeams(line);
+							break;
+						case 1:
+							break;
+						default:
+							_lines.Add(line);
+							break;
 						}
-						_recentFile = dataUri;
 					}
 				}
 			}
-			catch(Exception ex) 
+			catch (Exception ex)
 			{
-				_txtPlay.Text = ex.Message; 
+				_txtPlay.Text = ex.Message;
 			}
 
-			_sbCurrentPlay.Max = result.Count - 1;
+			_sbCurrentPlay.Max = _lines.Count - 1;
 
-			return result;
+			GotoPlay(this, currentPlay);
 		}
 
 		private void GotoPlay(object sender, int index)

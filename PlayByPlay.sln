@@ -4,6 +4,10 @@ VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlayByPlay", "PlayByPlay.csproj", "{E7457296-FA81-42E7-AB9F-E9A8CE962FAE}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlayByPlay.Api", "..\..\PlayByPlayWeb\PlayByPlay.Api\PlayByPlay.Api.csproj", "{D220708D-9CB8-4606-9CC6-385EFDD195AD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlayByPlay.AspNetCore", "..\..\PlayByPlayWeb\PlayByPlay.AspNetCore\PlayByPlay.AspNetCore.csproj", "{F7BC5415-3D09-429C-A22E-92AA849CF166}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -16,6 +20,14 @@ Global
 		{E7457296-FA81-42E7-AB9F-E9A8CE962FAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7457296-FA81-42E7-AB9F-E9A8CE962FAE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E7457296-FA81-42E7-AB9F-E9A8CE962FAE}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{D220708D-9CB8-4606-9CC6-385EFDD195AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D220708D-9CB8-4606-9CC6-385EFDD195AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D220708D-9CB8-4606-9CC6-385EFDD195AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D220708D-9CB8-4606-9CC6-385EFDD195AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7BC5415-3D09-429C-A22E-92AA849CF166}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7BC5415-3D09-429C-A22E-92AA849CF166}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7BC5415-3D09-429C-A22E-92AA849CF166}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7BC5415-3D09-429C-A22E-92AA849CF166}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
